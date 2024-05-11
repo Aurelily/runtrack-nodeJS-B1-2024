@@ -1,0 +1,16 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Nouveau titre de la tâche",
+      "description": "Nouvelle description de la tâche",
+      "completed": true
+    },
+    {
+      "id": 2,
+      "title": "Faire la vaisselle",
+      "description": "Faire la vaisselle de la journée",
+      "completed": false
+    }
+  ]
+}
