@@ -1,0 +1,127 @@
+INSTALLER MONGODB SUR UBUNTU :
+----------------------------
+
+- Ouvrir un terminal et faire : sudo apt update
+- Télécharger votre version de MongoDB Community server
+- Ouvrir un terminal à l'endroit où on l'a téléchargé
+- taper : sudo dpkg -i nomdufichierdinstall.deb
+- Dans un autre terminal on verifie l'installation avec : mongod --version
+- installer de la même façon MonDB Shell (mongosh) et MongoDB Compass
+
+
+Pour se connecter à COMPASS, il faut d'abord lancer le serveur en local comme ceci (Ubuntu) : 
+- Pour vérifier le status du serveur mongo :  sudo systemctl status mongod
+- Pour le demarrer : sudo systemctl start mongod 
+- Pour l'arreter : sudo systemctl stop mongod 
+- Pour le redemarrer : sudo systemctl restart mongod 
+
+
+UTILISER MongoDB en ligne de commande :
+-------------------------------------------------
+- taper mongosh dans le terminal (Vous aurez l'url de connexion pour compass de type mongodb://127.0.0.1:27017/)
+- Ou utilisez le terminal Mongosh de Compass
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+JOB 02 :
+--------
+show dbs  :  pour voir les bdd disponibles
+
+JOB 03 :
+--------
+use shop : Pour créer une bdd nommée "shop"
+db.createCollection('product') : Pour créer la collection nommée "product" dans la bdd "shop"
+
+Pour ajouter un ou plusieurs documents à la collection "product" :
+db.product.insertOne([{"name":"chaussure", "description":"une paire de chaussures", "price":35, "quantity":120}])
+
+JOB 04 :
+---------
+db.product.insertMany([
+    {"name":"pantalon noir", "description":"un pantalon noir", "price":14.99, "quantity":12},
+    {"name":"chaussettes", "description":"chaussettes cool !", "price":6, "quantity":6},
+    ])
+
+JOB 05 :
+---------
+db.createCollection('category')
+db.category.insertMany([
+    {"name":"Vêtements"},
+    {"name":"Chaussures"},
+    {"name":"Accessoires"}
+    ])
+
+JOB 06 :
+---------
+show collections : Pour lister les collections présentes dans la bdd 
+db.getCollectionInfos() : Pour avoir toutes les infos sur la collection créée
+
+
+JOB 07 :
+---------
+db.category.find()  :  Pour voir toutes les données de la collection "category"
+
+
+JOB 08 :
+---------
+db.category.find().limit(2)  :  Pour limiter les données à 2 documents
+
+JOB 09 et 10 :
+---------------
+db.product.find().sort({ price: 1 })  : Pour afficher tous les produits trier par prix croissant (-1 pour decroissant)
+
+
+JOB 11 :
+-------------
+Pour récupérer les produits ayant un prix supérieur à 5 euros ET un stock inférieur à 100.
+db.product.find({
+    price: { $gt: 5 },  // $gt pour "greater than" (supérieur à)
+    quantity: { $lt: 100 }  // $lt pour "less than" (inférieur à)
+})
+
+
+JOB 12 :
+-----------
+Pour récupérer les produits ayant un prix supérieur à 14.99 euros OU un stock supérieur à 100.
+db.product.find({
+    $or: [
+        { price: { $gt: 14.99 } },  // $gt pour "greater than" (supérieur à)
+        { quantity: { $gt: 100 } }  // $gt pour "greater than" (supérieur à)
+    ]
+})
+
+JOB 13 :
+------------
+Pour Récupérer l’ensemble des produits sans leurs id.
+db.product.find({}, { _id: 0 })
+
+Note ----> La synthaxe de find() est : db.collection.find(query, projection)
+query etant les critères de filtrage des documents à récupérer (ici rien)
+et projection qui est un document optionnel qui spécifie quels champs inclure ou exclure des résultats de la requête
+(0 pour exculre et 1 pour inclure)
+
+
+JOB 14 :
+---------------
+Récupérer une catégorie à l’aide de son id. Taper ces deux ligne l'une après l'autre.
+var categoryId = ObjectId("votre_id_de_catégorie");
+db.category.findOne({ _id: categoryId })
+
+
+JOB 15 :
+---------------
+Changer le nom de la catégorie “bébé” en “Vêtements pour enfant”.
+db.category.updateOne(
+    { name: "bébé" },
+    { $set: { name: "Vêtements pour enfant" } }
+)
+
+
+JOB 16 :
+-----------------
+Créer une relation entre la collection “product” et “category” à l’aide d’un
+champ nommé “category_id”.
+EN COURS
+
+
+
