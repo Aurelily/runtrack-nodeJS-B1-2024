@@ -104,6 +104,7 @@ et projection qui est un document optionnel qui spécifie quels champs inclure o
 JOB 14 :
 ---------------
 Récupérer une catégorie à l’aide de son id. Taper ces deux ligne l'une après l'autre.
+
 var categoryId = ObjectId("votre_id_de_catégorie");
 db.category.findOne({ _id: categoryId })
 
@@ -111,6 +112,7 @@ db.category.findOne({ _id: categoryId })
 JOB 15 :
 ---------------
 Changer le nom de la catégorie “bébé” en “Vêtements pour enfant”.
+
 db.category.updateOne(
     { name: "bébé" },
     { $set: { name: "Vêtements pour enfant" } }
@@ -121,7 +123,55 @@ JOB 16 :
 -----------------
 Créer une relation entre la collection “product” et “category” à l’aide d’un
 champ nommé “category_id”.
-EN COURS
 
+POUR INFO : Documents type de ma collection product :
+{_id: ObjectId(6640d2700a637884cba382d2), name: "chaussure", description: "une paire de chaussures", price: 35, quantity: 120, category_id: ObjectId(6640d4c80a637884cba382d7)}
+POUR INFO : Documents type de ma collection category :
+{_id: ObjectId(6640d4c80a637884cba382d7), name: "Chaussures"}
+
+COMMENT FAIRE : 
+
+1- Je mets la categorie "vêtement" dans une constante via son id:
+
+    constcategory = db.category.findOne({"_id": ObjectId('6640d4c80a637884cba382d6')})
+
+
+2- J'update un par un les produits concernés par cette catégorie avec leur _id (ici le pantalon noir mais le faire avec tous les vêtements et idem pour les autres categories):
+
+    db.product.updateOne(
+        { _id: ObjectId('6640d4000a637884cba382d4') },
+        { $set: { category_id: constcategory._id } }
+    )
+
+
+3 - J'utilise l'agrégation pour créer un champ category avec les infos dépliées (mais c'est clairement seulement de l'affichage dans le terminal, ça ne modifie en rien les documents de la bdd)
+
+    db.product.aggregate([
+    {
+        $lookup: {
+            from: "category", // Nom de la collection contenant les catégories
+            localField: "category_id",
+            foreignField: "_id",
+            as: "category"
+        }
+    },
+    {
+        $unwind: "$category" // Déplier le tableau résultant de la jointure
+    },
+    {
+        $project: {
+            _id: 1,
+            name: 1,
+            description: 1,
+            price: 1,
+            quantity: 1,
+            category_id: 1,
+            category: {
+                _id: "$category._id",
+                name: "$category.name"
+            }
+        }
+    }
+    ])
 
 
