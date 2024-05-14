@@ -1,14 +1,20 @@
 // import de Mongoose
 const mongoose = require('mongoose');
 
-// Import du module fs pour écrire le fichier students.json
-const fs = require('fs');
+// Import du module readline pour créer une interface console de demande utilisateur:
+
+const readline = require('readline');
+
+// Je crée mon interface de prompt :
+
+const myInterface = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
 // Connexion à la BDD
 
-mongoose.connect('mongodb://localhost:27017/LaPlateforme', { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connexion à la base de données réussie'))
-  .catch(err => console.error('Erreur lors de la connexion à la base de données:', err));
+mongoose.connect('mongodb://localhost:27017/LaPlateforme');
 
 // Création des schemas
 // Ajout de contraintes de vérifications :
@@ -57,29 +63,12 @@ const Student = mongoose.model('Student', studentSchema, 'student');
 const Year = mongoose.model('Year', yearSchema, 'year');
 
 
-// Fonction pour exporter les données de la collection Student dans un fichier JSON
-// NOTE : La méthode lean() est utilisée pour convertir les documents Mongoose en objets JavaScript purs, ce qui est plus efficace pour l'exportation.
-// NOTE 2 : Utilisation de JSON.stringify avec une indentation de 2 espaces pour rendre le fichier JSON lisible.
-async function exportStudentsToJSON() {
-    try {
-      const students = await Student.find().populate('year_id').lean();
-      const jsonContent = JSON.stringify(students, null, 2);
+// TESTER : Creation de nouveaux étudiants
+
+Student.create([
+    { firstname: "a", lastname: "zz", year_id: "6641f9c49fd78806b18e6e63", student_number: 345}])
+  .then(users => console.log("Étudiants créés:", users))
+  .catch(err => console.log("Erreurs lors de la création des étudiants: ", err));
   
-      fs.writeFile('students.json', jsonContent, 'utf8', (err) => {
-        if (err) {
-          console.error('Erreur lors de l\'écriture du fichier JSON:', err);
-        } else {
-          console.log('Données des étudiants exportées avec succès dans students.json');
-        }
-        mongoose.connection.close();
-      });
-    } catch (error) {
-      console.error('Une erreur est survenue :', error);
-      mongoose.connection.close();
-    }
-  }
-  
-  // Exécution de la fonction d'exportation
-  exportStudentsToJSON();
 
 
