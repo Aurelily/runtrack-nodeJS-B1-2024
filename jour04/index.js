@@ -17,63 +17,58 @@ const myInterface = readline.createInterface({
 mongoose.connect('mongodb://localhost:27017/LaPlateforme');
 
 // Création des schemas
+// Ajout de contraintes de vérifications :
+// - firstname et lastname doivent être des chaînes de caractères non vides.
+// - year_id doit être un ObjectId valide faisant référence à un document dans la collection Year.
+// - student_number doit être un nombre entier unique, obligatoire, et compris entre 1 et 9999.
 
 const studentSchema = new mongoose.Schema({
-    firstname: String,
-    lastname: String,
+    firstname: {
+      type: String,
+      required: [true, 'Le prénom est obligatoire.'],
+      trim: true
+    },
+    lastname: {
+      type: String,
+      required: [true, 'Le nom de famille est obligatoire.'],
+      trim: true
+    },
     year_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Year',
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Year',
+      required: [true, 'L\'ID du cursus est obligatoire.']
     },
     student_number: {
-        type: Number,
-        unique: true,
-        required: true
+      type: Number,
+      unique: true,
+      required: [true, 'Le numéro d\'étudiant est obligatoire.'],
+      min: [1, 'Le numéro d\'étudiant doit être compris entre 1 et 9999.'],
+      max: [9999, 'Le numéro d\'étudiant doit être compris entre 1 et 9999.']
     }
-});
+  });
 
-const yearSchema = new mongoose.Schema({
-    year: String,
-})
+  // Ajout de contraintes de vérifications :
+  // year doit être une chaîne de caractères non vide et unique (si nécessaire).
+  const yearSchema = new mongoose.Schema({
+    year: {
+      type: String,
+      required: [true, 'Le nom du cursus est obligatoire.'],
+      unique: true,
+      trim: true
+    }
+  });
 
 // Initialisation des schemas dans des variables
 const Student = mongoose.model('Student', studentSchema, 'student');
 const Year = mongoose.model('Year', yearSchema, 'year');
 
 
+// TESTER : Creation de nouveaux étudiants
 
-// Fonction pour demander l'ID de l'étudiant à l'utilisateur
-function askStudentId() {
-    return new Promise((resolve, reject) => {
-      myInterface.question('Veuillez saisir l\'ID de l\'étudiant : ', (answer) => {
-        resolve(answer.trim());
-      });
-    });
-  }
+Student.create([
+    { firstname: "a", lastname: "zz", year_id: "6641f9c49fd78806b18e6e63", student_number: 345}])
+  .then(users => console.log("Étudiants créés:", users))
+  .catch(err => console.log("Erreurs lors de la création des étudiants: ", err));
   
-// Fonction principale pour supprimer un étudiant
-async function deleteStudent() {
-    try {
-      const studentId = await askStudentId();
-  
-      // Requête pour supprimer l'étudiant par son ID
-      const result = await Student.findByIdAndDelete(studentId);
-  
-      if (result) {
-        console.log('Étudiant supprimé avec succès :', result);
-      } else {
-        console.log('Aucun étudiant trouvé avec l\'ID fourni.');
-      }
-    } catch (error) {
-      console.error('Une erreur est survenue :', error);
-    } finally {
-      myInterface.close();
-      mongoose.connection.close();
-    }
-  }
-  
-  // Exécution de la fonction principale
-  deleteStudent();
 
 
