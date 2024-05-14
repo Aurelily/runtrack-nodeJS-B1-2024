@@ -43,38 +43,47 @@ const Year = mongoose.model('Year', yearSchema, 'year');
 
 
 
-// Fonction pour demander le nom de famille à l'utilisateur
-function askLastName() {
+// Fonction pour demander l'ID de l'étudiant à l'utilisateur
+function askStudentId() {
     return new Promise((resolve, reject) => {
-      myInterface.question('Veuillez saisir un nom de famille : ', (answer) => {
-        if (answer.trim()) {
-          resolve(answer.trim());
-        } else {
-          console.log('Veuillez saisir un nom de famille valide.');
-          askLastName().then(resolve).catch(reject);
-        }
+      myInterface.question('Veuillez saisir l\'ID de l\'étudiant : ', (answer) => {
+        resolve(answer.trim());
       });
     });
   }
-
   
- // Fonction principale pour rechercher un étudiant par nom de famille
-async function findStudentByLastName() {
+  // Fonction pour demander l'ID du nouveau cursus à l'utilisateur
+  function askYearId() {
+    return new Promise((resolve, reject) => {
+      myInterface.question('Veuillez saisir l\'ID du nouveau cursus : ', (answer) => {
+        resolve(answer.trim());
+      });
+    });
+  }
+  
+  // Fonction principale pour mettre à jour le cursus d'un étudiant
+  async function updateStudentYear() {
     try {
-      const lastName = await askLastName();
-      console.log('Nom de famille saisi :', lastName);
+      const studentId = await askStudentId();
+      const yearId = await askYearId();
   
-      // Requête pour trouver l'étudiant avec le nom de famille saisi
-      const students = await Student.find({ lastname: lastName }).populate('year_id');
+      // Requête pour mettre à jour le cursus de l'étudiant
+      const result = await Student.findByIdAndUpdate(studentId, { year_id: yearId }, { new: true });
   
-      // Afficher les résultats
-      if (students.length > 0) {
-        console.log('Informations des étudiants avec le nom de famille', lastName, ':');
-        students.forEach(student => {
-          console.log(`Prénom: ${student.firstname}, Nom: ${student.lastname}, Numéro d'étudiant: ${student.student_number}, Cursus: ${student.year_id.year}`);
-        });
+      if (result) {
+        console.log('Cursus de l\'étudiant mis à jour avec succès :', result);
+        // Requête pour récupérer l'ensemble des étudiants avec leurs cursus
+        const studentsList = await Student.find().populate('year_id');
+
+        // Afficher la liste mise à jour dans la console
+        if(studentsList){
+            console.log("Liste des étudiants avec leurs cursus :");
+            studentsList.forEach(student => {
+                console.log(`${student.firstname} ${student.lastname} - Cursus: ${student.year_id.year}`);
+            });
+        }
       } else {
-        console.log('Aucun étudiant trouvé avec le nom de famille', lastName);
+        console.log('Aucun étudiant trouvé avec l\'ID fourni.');
       }
     } catch (error) {
       console.error('Une erreur est survenue :', error);
@@ -85,4 +94,6 @@ async function findStudentByLastName() {
   }
   
   // Exécution de la fonction principale
-  findStudentByLastName();
+  updateStudentYear();
+
+
