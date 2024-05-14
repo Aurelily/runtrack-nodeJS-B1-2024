@@ -52,16 +52,36 @@ function askStudentId() {
     });
   }
   
-// Fonction principale pour supprimer un étudiant
-async function deleteStudent() {
+  // Fonction pour demander l'ID du nouveau cursus à l'utilisateur
+  function askYearId() {
+    return new Promise((resolve, reject) => {
+      myInterface.question('Veuillez saisir l\'ID du nouveau cursus : ', (answer) => {
+        resolve(answer.trim());
+      });
+    });
+  }
+  
+  // Fonction principale pour mettre à jour le cursus d'un étudiant
+  async function updateStudentYear() {
     try {
       const studentId = await askStudentId();
+      const yearId = await askYearId();
   
-      // Requête pour supprimer l'étudiant par son ID
-      const result = await Student.findByIdAndDelete(studentId);
+      // Requête pour mettre à jour le cursus de l'étudiant
+      const result = await Student.findByIdAndUpdate(studentId, { year_id: yearId }, { new: true });
   
       if (result) {
-        console.log('Étudiant supprimé avec succès :', result);
+        console.log('Cursus de l\'étudiant mis à jour avec succès :', result);
+        // Requête pour récupérer l'ensemble des étudiants avec leurs cursus
+        const studentsList = await Student.find().populate('year_id');
+
+        // Afficher la liste mise à jour dans la console
+        if(studentsList){
+            console.log("Liste des étudiants avec leurs cursus :");
+            studentsList.forEach(student => {
+                console.log(`${student.firstname} ${student.lastname} - Cursus: ${student.year_id.year}`);
+            });
+        }
       } else {
         console.log('Aucun étudiant trouvé avec l\'ID fourni.');
       }
@@ -74,6 +94,6 @@ async function deleteStudent() {
   }
   
   // Exécution de la fonction principale
-  deleteStudent();
+  updateStudentYear();
 
 
