@@ -175,3 +175,39 @@ COMMENT FAIRE :
     ])
 
 
+JOB 17 :
+------------------
+Récupérer la catégorie qui possède le moins d'articles.
+
+db.product.aggregate([
+   {
+      $group: {
+         _id: "$category_id",
+         total: { $sum: 1 }
+      }
+   },
+   {
+      $lookup: {
+         from: "category",
+         localField: "_id",
+         foreignField: "_id",
+         as: "category"
+      }
+   },
+   {
+      $unwind: "$category"
+   },
+   {
+      $sort: { total: 1 }
+   },
+   {
+      $limit: 1
+   },
+   {
+      $project: {
+         count: "$total",
+         category_id: "$category._id",
+         category_name: "$category.name"
+      }
+   }
+])

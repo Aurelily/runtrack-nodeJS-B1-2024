@@ -4,6 +4,9 @@ import { readFile, writeFile } from 'fs';
 import { parse } from 'url';
 import { resolve } from 'path';
 
+// FONCTIONS UTILS
+// -------------------
+
 // Fonction pour lire les données à partir de data.json
 function readData(callback) {
   readFile(resolve('data.json'), 'utf8', (err, data) => {
@@ -27,6 +30,9 @@ function writeData(data, callback) {
     callback(null);
   });
 }
+
+// FONCTIONS QUI GERENT LE FONCTIONNEMENT DES ROUTES
+// ----------------------------------------------------
 
 // Fonction pour récupérer toutes les tâches de la liste
 export function getAllTasks(req, res) {

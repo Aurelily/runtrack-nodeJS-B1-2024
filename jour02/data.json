@@ -2,7 +2,7 @@
   "tasks": [
     {
       "id": 1,
-      "title": "Nouveau titre de la tâche",
+      "title": "Vraiment nouveau titre de la tâche",
       "description": "Nouvelle description de la tâche",
       "completed": true
     },
@@ -11,6 +11,12 @@
       "title": "Faire la vaisselle",
       "description": "Faire la vaisselle de la journée",
       "completed": false
+    },
+    {
+      "title": "Changer l'ampoule du salon",
+      "description": "Aller acheter une ampoule 40W neuve et la changer au salon.",
+      "completed": false,
+      "id": 3
     }
   ]
 }
