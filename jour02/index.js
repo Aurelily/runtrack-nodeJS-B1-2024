@@ -18,7 +18,7 @@ server.on('request', (req, res) => {
   }
 });
 
-const PORT = 8888;
+const PORT = 3000;
 server.listen(PORT, 'localhost', () => {
   console.log(`Listening on 127.0.0.1:${PORT}`);
 });
