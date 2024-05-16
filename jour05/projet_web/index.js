@@ -21,6 +21,12 @@ app.get('/about', (req, res) => {
   res.sendFile(path.join(publicPath, '/about.html'))
 })
 
+
+// Middleware pour gérer les erreurs 404
+app.use((req, res, next) => {
+  res.status(404).sendFile(path.join(publicPath, '404.html'));
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
